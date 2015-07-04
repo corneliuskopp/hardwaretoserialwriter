@@ -1,0 +1,2 @@
+App and form icon are 'ios7-pulse-strong.png' from http://ionicons.com/, used under the MIT licence.
+Uses Open Hardware Monitor library, https://code.google.com/p/open-hardware-monitor/, used under Mozilla Public License 2.0 (MPL).
