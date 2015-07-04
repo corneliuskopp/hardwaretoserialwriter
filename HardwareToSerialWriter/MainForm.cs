@@ -238,11 +238,6 @@ namespace HardwareToSerialWriter
             btnStartDisplayLoadAndRam.Enabled = true;
         }
 
-        private void btnSendCustomText_Click(System.Object sender, System.EventArgs e)
-        {
-            WriteSerial(tbCustomText.Text);
-        }
-
         private void DisplayHardwareValuesTimer_Tick(System.Object sender, System.EventArgs e)
         {
             UpdateDisplay();
@@ -267,6 +262,11 @@ namespace HardwareToSerialWriter
             ClearDisplay();
             WriteSerial("LCD is working!");
             ClearDisplayTimer.Start();
+        }
+
+        private void btnSendCustomText_Click(System.Object sender, System.EventArgs e)
+        {
+            WriteSerial(tbCustomText.Text);
         }
 
         private void btnLine1_Click(System.Object sender, System.EventArgs e)

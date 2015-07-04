@@ -23,20 +23,16 @@
             <Border DockPanel.Dock="Top" Visibility="{Binding SerialCommsActive, Converter={StaticResource BoolToHiddenConverter}}">
                 <StackPanel>
                     <TextBlock>Send custom text</TextBlock>
-                    <TextBox Height="25"/>
+                    <TextBox Height="25" Text="{Binding CustomText, Mode=TwoWay}"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Button Grid.Row="0" Grid.Column="0">Send</Button>
-                        <Button Grid.Row="0" Grid.Column="1">Clear display</Button>
-                        <Button Grid.Row="1" Grid.Column="0">Line 1</Button>
-                        <Button Grid.Row="1" Grid.Column="1">Line 2</Button>
+                        <Button Command="{Binding Path=SendCustomText}" CommandParameter="Line1" Grid.Row="0" Grid.Column="0">Send Line 1</Button>
+                        <Button Command="{Binding Path=SendCustomText}" CommandParameter="Line2" Grid.Row="0" Grid.Column="1">Send Line 2</Button>
+                        <Button Command="{Binding Path=SendCustomText}" CommandParameter="Clear" Grid.Row="0" Grid.Column="2">Clear display</Button>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -58,7 +54,7 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top">Output</TextBlock>
                     <Border DockPanel.Dock="Top" Style="{StaticResource OutputBorder}">
-                        <TextBlock DockPanel.Dock="Top" x:Name="TbOutput" Style="{StaticResource Output}" Text="{Binding TextOutput}" />
+                        <TextBlock DockPanel.Dock="Top" Style="{StaticResource Output}" Text="{Binding TextOutput}" />
                     </Border>
                 </DockPanel>
             </Border>

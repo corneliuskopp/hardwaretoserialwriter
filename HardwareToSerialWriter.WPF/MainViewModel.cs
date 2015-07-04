@@ -65,6 +65,21 @@
             }
         }
 
+        private string _customText;
+        public string CustomText
+        {
+            get { return _customText; }
+            set
+            {
+                if (value == _customText)
+                {
+                    return;
+                }
+                _customText = value;
+                OnPropertyChanged("CustomText");
+            }
+        }
+
         public string SelectedPort { get; set; }
 
         public ObservableCollection<string> ComPortNames
@@ -101,7 +116,15 @@
         {
             get
             {
-                return _connectComAndTest ?? (_connectComAndTest = new CommandHandler(ConnectComAndTestHander));
+                return _connectComAndTest ?? (_connectComAndTest = new CommandHandler(ConnectComAndTestHandler));
+            }
+        }
+        private ICommand _sendCustomText;
+        public ICommand SendCustomText
+        {
+            get
+            {
+                return _sendCustomText ?? (_sendCustomText = new StringCommandHandler(SendCustomTextHandler));
             }
         }
         //
@@ -328,17 +351,34 @@
             WriteSerial("~");
         }
 
-        public void ConnectComAndTestHander()
+        private void ConnectComAndTestHandler()
         {
             ClearDisplay();
-            WriteSerial("LCD is working! On port: " + SelectedPort);
+            WriteSerial("*LCD is working!`Port: " + SelectedPort);
             _clearDisplayTimer.Start();
         }
-
-        private enum ShowDataKinds
+        
+        private void SendCustomTextHandler(string parameter)
         {
-            CpuLoadAndRam, CpuAndGpuTemperature
+            switch (parameter)
+            {
+                case "Line1":
+                    WriteSerial("*");
+                    WriteSerial(CustomText);
+                    break;
+                case "Line2":
+                    WriteSerial("`");
+                    WriteSerial(CustomText);
+                    break;
+                case "Clear":
+                    WriteSerial("~");
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Unexpected parameter: '{0}'. I don't know what to do. :(", parameter));
+            }
         }
+
+        private enum ShowDataKinds { CpuLoadAndRam, CpuAndGpuTemperature }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
