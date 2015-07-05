@@ -1,4 +1,4 @@
-ï»¿namespace HardwareToSerialWriter.WPF
+namespace HardwareToSerialWriter.WPF.Viewmodels
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,6 @@
     using System.Diagnostics;
     using System.IO.Ports;
     using System.Linq;
-    using System.Windows;
     using System.Windows.Input;
     using System.Windows.Threading;
     using Annotations;
@@ -281,7 +280,7 @@
             // If the following line is commented out, it shows all cores. Otherwise only the die package temp
             cpuTemps = cpuTemps.Where(t => t.Name.Contains("Package")).ToList();
 
-            string cpuTemp = cpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} Â°C ", cur.Name, cur.Value));
+            string cpuTemp = cpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} °C ", cur.Name, cur.Value));
 
 
             foreach (var hardware in _gpuTempByHardware.Keys)
@@ -290,7 +289,7 @@
             }
             var gpuTemps = _gpuTempByHardware.Values.SelectMany(s => s).Distinct().OrderBy(s => s.Name).ToList();
 
-            string gpuTemp = gpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} Â°C ", cur.Name, cur.Value));
+            string gpuTemp = gpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} °C ", cur.Name, cur.Value));
 
             // ` First line
             // * Second line

@@ -1,4 +1,4 @@
-﻿namespace HardwareToSerialWriter.WPF
+namespace HardwareToSerialWriter.WPF.Converters
 {
     using System;
     using System.Windows;

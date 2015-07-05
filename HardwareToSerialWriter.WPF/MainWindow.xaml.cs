@@ -1,6 +1,7 @@
 ﻿namespace HardwareToSerialWriter.WPF
 {
     using System.Windows;
+    using Viewmodels;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -9,7 +10,19 @@
     {
         public MainWindow()
         {
+            App.SplashScreen.AddMessage("Loading");
+
+            LoadViewModel();
+            
+            App.SplashScreen.AddMessage("Done!");
+            App.SplashScreen.LoadComplete();
             InitializeComponent();
+        }
+
+        private void LoadViewModel()
+        {
+            var vm = new MainViewModel();
+            DataContext = vm;
         }
     }
 }
