@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwareToSerialWriter", "HardwareToSerialWriter\HardwareToSerialWriter.csproj", "{F5979C09-C77B-49B1-8DA6-03E90E3B0794}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwareToSerialWriter.WPF", "HardwareToSerialWriter.WPF\HardwareToSerialWriter.WPF.csproj", "{84049937-053B-421C-8526-5B934DB308BD}"
 EndProject
 Global
@@ -15,16 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F5979C09-C77B-49B1-8DA6-03E90E3B0794}.Release|x86.ActiveCfg = Release|Any CPU
 		{84049937-053B-421C-8526-5B934DB308BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{84049937-053B-421C-8526-5B934DB308BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84049937-053B-421C-8526-5B934DB308BD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
