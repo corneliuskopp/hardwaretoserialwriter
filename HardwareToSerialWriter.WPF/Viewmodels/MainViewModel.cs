@@ -15,7 +15,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
 
     public class MainViewModel : INotifyPropertyChanged 
     {
-        private const bool SHALL_USE_SERIAL_PORT = false;
+        private const bool SHALL_USE_SERIAL_PORT = true;
 
         private readonly ObservableCollection<string> _comPortNames = new ObservableCollection<string> { "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9" };
 
