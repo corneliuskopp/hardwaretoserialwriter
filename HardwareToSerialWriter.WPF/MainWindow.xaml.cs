@@ -1,4 +1,4 @@
-﻿namespace HardwareToSerialWriter.WPF
+﻿namespace HardwareToSerialWriter
 {
     using System.Windows;
     using Viewmodels;

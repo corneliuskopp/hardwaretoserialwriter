@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwareToSerialWriter.WPF", "HardwareToSerialWriter.WPF\HardwareToSerialWriter.WPF.csproj", "{84049937-053B-421C-8526-5B934DB308BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HardwareToSerialWriter", "HardwareToSerialWriter.WPF\HardwareToSerialWriter.csproj", "{84049937-053B-421C-8526-5B934DB308BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

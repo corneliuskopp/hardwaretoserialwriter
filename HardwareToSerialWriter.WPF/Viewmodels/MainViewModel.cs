@@ -1,4 +1,4 @@
-namespace HardwareToSerialWriter.WPF.Viewmodels
+namespace HardwareToSerialWriter.Viewmodels
 {
     using System;
     using System.Collections.Generic;

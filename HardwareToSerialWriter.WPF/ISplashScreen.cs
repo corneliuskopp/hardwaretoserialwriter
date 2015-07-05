@@ -1,4 +1,4 @@
-﻿namespace HardwareToSerialWriter.WPF
+﻿namespace HardwareToSerialWriter
 {
     public interface ISplashScreen
     {

@@ -1,4 +1,4 @@
-namespace HardwareToSerialWriter.WPF.CommandHandlers
+namespace HardwareToSerialWriter.CommandHandlers
 {
     using System;
     using System.Windows.Input;

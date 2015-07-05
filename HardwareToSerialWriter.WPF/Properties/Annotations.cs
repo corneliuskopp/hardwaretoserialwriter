@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-using System;
-using System.ComponentModel;
-
-namespace HardwareToSerialWriter.WPF.Annotations
+namespace HardwareToSerialWriter.Annotations
 {
-  /// <summary>
+    using System;
+
+    /// <summary>
   /// Indicates that marked element should be localized or not.
   /// </summary>
   /// <example>
