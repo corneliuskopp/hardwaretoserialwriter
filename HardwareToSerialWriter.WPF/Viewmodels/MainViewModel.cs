@@ -7,6 +7,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
     using System.Diagnostics;
     using System.IO.Ports;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Input;
     using System.Windows.Threading;
     using Annotations;
@@ -16,8 +17,6 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
     public class MainViewModel : INotifyPropertyChanged 
     {
         private const bool SHALL_USE_SERIAL_PORT = true;
-
-        private readonly ObservableCollection<string> _comPortNames = new ObservableCollection<string> { "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9" };
 
         private readonly PerformanceCounter _performanceCounter = new PerformanceCounter();
         private readonly Computer _myComputer;
@@ -79,8 +78,18 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
             }
         }
 
-        public string SelectedPort { get; set; }
+        private string _selectedPort;
+        public string SelectedPort
+        {
+            get { return _selectedPort; }
+            set
+            {
+                _selectedPort = value;
+                _destinationSerialPort.PortName = _selectedPort;
+            }
+        }
 
+        private readonly ObservableCollection<string> _comPortNames = new ObservableCollection<string>();
         public ObservableCollection<string> ComPortNames
         {
             get { return _comPortNames; }
@@ -166,9 +175,16 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
                 _clearDisplayTimer.Stop();
             };
 
+            var portNames = SerialPort.GetPortNames();
+
+            foreach (var portName in portNames)
+            {
+                _comPortNames.Add(portName);
+            }
+
             IsDisplaying = false;
             TextOutput = string.Empty;
-            SelectedPort = "COM5";
+            SelectedPort = _comPortNames.FirstOrDefault() ?? "No ports found :(";
         }
         
         private void StartDisplayHandler(string parameter)
@@ -203,18 +219,27 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
             IsDisplaying = false;
         }
         
+
         private void ResetSerialPort()
         {
             if (SHALL_USE_SERIAL_PORT)
             {
-                _destinationSerialPort.Close();
-                _destinationSerialPort.PortName = SelectedPort;
-                _destinationSerialPort.BaudRate = 9600;
-                _destinationSerialPort.DataBits = 8;
-                _destinationSerialPort.Parity = Parity.None;
-                _destinationSerialPort.StopBits = StopBits.One;
-                _destinationSerialPort.Handshake = Handshake.None;
-                _destinationSerialPort.Encoding = System.Text.Encoding.Default;
+                try
+                {
+                    _destinationSerialPort.Close();
+                    _destinationSerialPort.PortName = SelectedPort;
+                    _destinationSerialPort.BaudRate = 9600;
+                    _destinationSerialPort.DataBits = 8;
+                    _destinationSerialPort.Parity = Parity.None;
+                    _destinationSerialPort.StopBits = StopBits.One;
+                    _destinationSerialPort.Handshake = Handshake.None;
+                    _destinationSerialPort.Encoding = System.Text.Encoding.Default;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Error resetting port: {0} ({1})", e.Message, e.GetType()));
+                    return;
+                }
             }
         }
 
@@ -335,12 +360,38 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
 
             if (SHALL_USE_SERIAL_PORT)
             {
-                _destinationSerialPort.Open();
-                foreach (var message in messages)
+                try
                 {
-                    _destinationSerialPort.Write(message);
+                    _destinationSerialPort.Open();
                 }
-                _destinationSerialPort.Close();
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Error opening port: {0} ({1})", e.Message, e.GetType()));
+                    return;
+                }
+
+                try
+                {
+                    foreach (var message in messages)
+                    {
+                        _destinationSerialPort.Write(message);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Error writing messages to port: {0} ({1})", e.Message, e.GetType()));
+                    return;
+                }
+
+                try
+                {
+                    _destinationSerialPort.Close();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Error closing port: {0} ({1})", e.Message, e.GetType()));
+                    return;
+                }
             }
         }
 
