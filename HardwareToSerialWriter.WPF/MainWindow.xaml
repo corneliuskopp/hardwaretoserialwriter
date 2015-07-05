@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:HardwareToSerialWriter.WPF.Converters"
         Icon="Assets\ios7-pulse-strong.ico"
-        Title="MainWindow" Height="450" Width="300" Background="White">
+        Title="MainWindow" Height="500" Width="300" Background="White">
     <Window.Resources>
         <converters:BoolToCollapsingVisibilityConverter x:Key="BoolToHiddenConverter" />
     </Window.Resources>
@@ -29,22 +29,34 @@
                         </Grid.ColumnDefinitions>
                         <Button Command="{Binding Path=SendCustomText}" CommandParameter="Line1" Grid.Row="0" Grid.Column="0">Send Line 1</Button>
                         <Button Command="{Binding Path=SendCustomText}" CommandParameter="Line2" Grid.Row="0" Grid.Column="1">Send Line 2</Button>
-                        <Button Command="{Binding Path=SendCustomText}" CommandParameter="Clear" Grid.Row="0" Grid.Column="2">Clear display</Button>
+                        <Button Command="{Binding Path=SendCustomText}" CommandParameter="Clear" Grid.Row="0" Grid.Column="2">Clear</Button>
                     </Grid>
                 </StackPanel>
             </Border>
             <Border DockPanel.Dock="Top">
                 <StackPanel>
-                    <TextBlock>Start displaying data</TextBlock>
+                    <TextBlock>Display data</TextBlock>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Command="{Binding Path=StartDisplay}" CommandParameter="CpuAndRam">CPU and RAM</Button>
-                        <Button Command="{Binding Path=StartDisplay}" CommandParameter="CpuGpuTemp" Grid.Column="1">CPU/GPU temps</Button>
+                        <Button Command="{Binding Path=StartDisplay}">Start</Button>
+                        <Button Command="{Binding Path=StopDisplay}" Grid.Column="1">Stop</Button>
                     </Grid>
-                    <Button Command="{Binding Path=StopDisplay}">Stop</Button>
+                </StackPanel>
+            </Border>
+            <Border DockPanel.Dock="Top">
+                <StackPanel>
+                    <TextBlock>Update frequency</TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox ItemsSource="{Binding UpdateFrequencies}" SelectedItem="{Binding UpdateFrequency}" IsSynchronizedWithCurrentItem="True" Grid.Column="0" />
+                        <TextBlock Grid.Column="1">seconds</TextBlock>
+                    </Grid>
                 </StackPanel>
             </Border>
             <Border DockPanel.Dock="Top">

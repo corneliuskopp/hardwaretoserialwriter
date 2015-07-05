@@ -14,7 +14,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
     using CommandHandlers;
     using OpenHardwareMonitor.Hardware;
 
-    public class MainViewModel : INotifyPropertyChanged 
+    public class MainViewModel : INotifyPropertyChanged
     {
         private const bool SHALL_USE_SERIAL_PORT = true;
 
@@ -25,14 +25,13 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
         private readonly DispatcherTimer _displayHardwareValuesTimer;
         private readonly DispatcherTimer _clearDisplayTimer;
 
-        private ShowDataKinds _showDataKinds = ShowDataKinds.CpuLoadAndRam;
         private readonly SerialPort _destinationSerialPort = new SerialPort();
 
         //
         // Bound properties
         //
         public bool SerialCommsActive { get { return SHALL_USE_SERIAL_PORT; } }
-        
+
         private bool _isDisplaying;
         public bool IsDisplaying
         {
@@ -94,6 +93,23 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
         {
             get { return _comPortNames; }
         }
+
+        private double _updateFrequency;
+        public double UpdateFrequency
+        {
+            get { return _updateFrequency; }
+            set
+            {
+                _updateFrequency = value;
+                _displayHardwareValuesTimer.Interval = TimeSpan.FromSeconds(value);
+            }
+        }
+
+        private readonly ObservableCollection<double> _updateFrequencies = new ObservableCollection<double>();
+        public ObservableCollection<double> UpdateFrequencies
+        {
+            get { return _updateFrequencies; }
+        }
         //
         // /Bound properties
         //
@@ -106,7 +122,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
         {
             get
             {
-                return _startDisplay ?? (_startDisplay = new StringCommandHandler(StartDisplayHandler));
+                return _startDisplay ?? (_startDisplay = new CommandHandler(StartDisplayHandler));
             }
         }
 
@@ -128,6 +144,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
             }
         }
         private ICommand _sendCustomText;
+
         public ICommand SendCustomText
         {
             get
@@ -152,7 +169,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
             _myComputer.Open();
 
             ConfigureComponents();
-            
+
             ResetSerialPort();
 
             GetGpuTemps();
@@ -182,26 +199,18 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
                 _comPortNames.Add(portName);
             }
 
+            foreach (var frequency in new List<double> { 0.5, 1, 5, 10 })
+            {
+                _updateFrequencies.Add(frequency);
+            }
+
             IsDisplaying = false;
             TextOutput = string.Empty;
             SelectedPort = _comPortNames.FirstOrDefault() ?? "No ports found :(";
         }
-        
-        private void StartDisplayHandler(string parameter)
-        {
-            if (parameter == "CpuAndRam")
-            {
-                _showDataKinds = ShowDataKinds.CpuLoadAndRam;
-            }
-            else if (parameter == "CpuGpuTemp")
-            {
-                _showDataKinds = ShowDataKinds.CpuAndGpuTemperature;
-            }
-            else
-            {
-                throw new ArgumentException(string.Format("Don't know what to do with parameter '{0}'. :(", parameter));
-            }
 
+        private void StartDisplayHandler()
+        {
             _displayHardwareValuesTimer.Start();
             UpdateDisplay();
 
@@ -212,13 +221,12 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
         {
             _displayHardwareValuesTimer.Stop();
 
-            const string loadString = "Monitoring" + "`" + "stopped!";
-            WriteSerial(new List<string> { "~", loadString });
-            
+            ClearDisplay();
+            WriteSerial("Monitoring" + "*" + "stopped!");
+
             _clearDisplayTimer.Start();
             IsDisplaying = false;
         }
-        
 
         private void ResetSerialPort()
         {
@@ -280,63 +288,44 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
         /// </summary>
         private void UpdateDisplay()
         {
-            if (_showDataKinds == ShowDataKinds.CpuLoadAndRam)
-            {
-                UpdateWithCpuAndRam();
-            }
-            else if (_showDataKinds == ShowDataKinds.CpuAndGpuTemperature)
-            {
-                UpdateWithCpuAndGpuTemps();
-            }
-            else
-            {
-                throw new InvalidOperationException("Got unexpected enum value: " + _showDataKinds.ToString() + ". Not sure what to display, so I will exit. :(");
-            }
-        }
-
-        private void UpdateWithCpuAndGpuTemps()
-        {
             foreach (var hardware in _cpuTempByHardware.Keys)
             {
                 hardware.Update();
             }
-            var cpuTemps = _cpuTempByHardware.Values.SelectMany(s => s).Distinct().OrderBy(s => s.Name).ToList();
-
-            // If the following line is commented out, it shows all cores. Otherwise only the die package temp
-            cpuTemps = cpuTemps.Where(t => t.Name.Contains("Package")).ToList();
-
-            string cpuTemp = cpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} °C ", cur.Name, cur.Value));
-
 
             foreach (var hardware in _gpuTempByHardware.Keys)
             {
                 hardware.Update();
             }
-            var gpuTemps = _gpuTempByHardware.Values.SelectMany(s => s).Distinct().OrderBy(s => s.Name).ToList();
 
-            string gpuTemp = gpuTemps.Aggregate(string.Empty, (acc, cur) => acc += string.Format("{0}: {1} °C ", cur.Name, cur.Value));
+            // Line 1
+            var cpuTemp = _cpuTempByHardware.Values
+                .SelectMany(s => s)
+                .First(t => t.Name.Contains("Package"));
 
-            // ` First line
-            // * Second line
-            var tempString = gpuTemp + "`" + cpuTemp + "*";
+            var cpuLoad = Math.Round(_performanceCounter.NextValue(), 0);
 
-            ClearDisplay();
-            WriteSerial(tempString);
-        }
+            // Line 2
+            var gpuTemp = _gpuTempByHardware.Values.SelectMany(s => s).First();
 
-        private void UpdateWithCpuAndRam()
-        {
             var computer = new Microsoft.VisualBasic.Devices.Computer();
-            var ramValue = (float)computer.Info.AvailablePhysicalMemory / (1024 * 1024);
-            var ramMb = Math.Round(ramValue, 2);
-            var cpuLoad = Math.Truncate(_performanceCounter.NextValue() * 100) / 100;
+            var ramPerc = Math.Round((double)100 * computer.Info.AvailablePhysicalMemory / computer.Info.TotalPhysicalMemory, 0);
 
-            // ` First line
-            // * Second line
-            var loadString = string.Format("RAM: {0} MB free`CPU: {1}%*", ramMb, cpuLoad);
+            // * First line
+            // ` Second line
+
+            /*
+             * 1234567890123456
+             * CPU 51C Load 27%
+             * GPU 46C RAM  44%
+             */
+
+            var displayString =
+                  string.Format("*CPU {0}C Load {1,2}%", cpuTemp.Value, cpuLoad)
+                + string.Format("`GPU {0}C RAM  {1,2}%", gpuTemp.Value, ramPerc);
 
             ClearDisplay();
-            WriteSerial(loadString);
+            WriteSerial(displayString);
         }
 
         private void WriteSerial(string message)
@@ -354,7 +343,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
                 }
                 else
                 {
-                    TextOutput = TextOutput += message;
+                    TextOutput = TextOutput += message.Replace("`", Environment.NewLine).Replace("*", string.Empty);
                 }
             }
 
@@ -407,7 +396,7 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
             WriteSerial("*LCD is working!`Port: " + SelectedPort);
             _clearDisplayTimer.Start();
         }
-        
+
         private void SendCustomTextHandler(string parameter)
         {
             switch (parameter)
@@ -427,8 +416,6 @@ namespace HardwareToSerialWriter.WPF.Viewmodels
                     throw new ArgumentException(string.Format("Unexpected parameter: '{0}'. I don't know what to do. :(", parameter));
             }
         }
-
-        private enum ShowDataKinds { CpuLoadAndRam, CpuAndGpuTemperature }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

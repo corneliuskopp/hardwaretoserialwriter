@@ -23,7 +23,7 @@
             <Setter Property="Margin" Value="3" />
         </Style>
         <Style x:Key="Output" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Lucida Sans Unicode" />
+            <Setter Property="FontFamily" Value="Courier New" />
             <Setter Property="FontSize" Value="14" />
         </Style>
         <Style x:Key="OutputBorder" TargetType="Border">
